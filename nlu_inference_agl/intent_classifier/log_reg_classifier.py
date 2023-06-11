@@ -2,19 +2,16 @@ from __future__ import unicode_literals
 
 import json
 import logging
-from builtins import range, str, zip
+from builtins import str, zip
 from pathlib import Path
 
-from nlu_inference_agl.common.log_utils import DifferedLoggingMessage, log_elapsed_time
-from nlu_inference_agl.common.utils import (
-    check_persisted_path, fitted_required, json_string)
-from nlu_inference_agl.constants import LANGUAGE, RES_PROBA
-from nlu_inference_agl.dataset import validate_and_format_dataset
+from nlu_inference_agl.common.log_utils import DifferedLoggingMessage
+from nlu_inference_agl.common.utils import (fitted_required)
+from nlu_inference_agl.constants import RES_PROBA
 from nlu_inference_agl.exceptions import LoadingError
 from nlu_inference_agl.intent_classifier.featurizer import Featurizer
 from nlu_inference_agl.intent_classifier.intent_classifier import IntentClassifier
-from nlu_inference_agl.intent_classifier.log_reg_classifier_utils import (
-    build_training_data, get_regularization_factor, text_to_utterance)
+from nlu_inference_agl.intent_classifier.log_reg_classifier_utils import (text_to_utterance)
 from nlu_inference_agl.pipeline.configs import LogRegIntentClassifierConfig
 from nlu_inference_agl.result import intent_classification_result
 

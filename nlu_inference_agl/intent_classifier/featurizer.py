@@ -8,11 +8,10 @@ from pathlib import Path
 from future.utils import iteritems
 
 from nlu_inference_agl.common.utils import (
-    json_string, fitted_required, replace_entities_with_placeholders,
-    check_persisted_path)
+    fitted_required, replace_entities_with_placeholders)
 from nlu_inference_agl.constants import (
-    DATA, ENTITY, ENTITY_KIND, LANGUAGE, NGRAM, TEXT, ENTITIES)
-from nlu_inference_agl.dataset import get_text_from_chunks, validate_and_format_dataset
+    DATA, ENTITY, ENTITY_KIND, NGRAM, TEXT)
+from nlu_inference_agl.dataset import get_text_from_chunks
 from nlu_inference_agl.entity_parser.builtin_entity_parser import (
     is_builtin_entity)
 from nlu_inference_agl.exceptions import (LoadingError)
