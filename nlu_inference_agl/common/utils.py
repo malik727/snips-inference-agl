@@ -237,12 +237,3 @@ SEMVER_PATTERN = r"^(?P<major>0|[1-9]\d*)" \
                  r"(?:\+(?P<buildmetadata>[0-9a-zA-Z-]+(?:\.[0-9a-zA-Z-]+)*)" \
                  r")?$"
 SEMVER_REGEX = re.compile(SEMVER_PATTERN)
-
-
-def parse_version(string_version):
-    match = SEMVER_REGEX.match(string_version)
-    if match is None:
-        msg = "Invalid version: %s. Accepted versions must match the" \
-              " following regex pattern: %s" % (string_version, SEMVER_PATTERN)
-        raise ValueError(msg)
-    return match.groupdict()

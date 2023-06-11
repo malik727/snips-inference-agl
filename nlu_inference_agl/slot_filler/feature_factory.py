@@ -140,57 +140,6 @@ class IsLastFactory(SingleFeatureFactory):
         return "1" if token_index == len(tokens) - 1 else None
 
 
-@CRFFeatureFactory.register("prefix")
-class PrefixFactory(SingleFeatureFactory):
-    """Feature: a prefix of the considered token
-
-    This feature has one parameter, *prefix_size*, which specifies the size of
-    the prefix
-    """
-
-    @property
-    def feature_name(self):
-        return "prefix_%s" % self.prefix_size
-
-    @property
-    def prefix_size(self):
-        return self.args["prefix_size"]
-
-    def compute_feature(self, tokens, token_index):
-        return get_word_chunk(normalize_token(tokens[token_index]),
-                              self.prefix_size, 0)
-
-
-@CRFFeatureFactory.register("suffix")
-class SuffixFactory(SingleFeatureFactory):
-    """Feature: a suffix of the considered token
-
-    This feature has one parameter, *suffix_size*, which specifies the size of
-    the suffix
-    """
-
-    @property
-    def feature_name(self):
-        return "suffix_%s" % self.suffix_size
-
-    @property
-    def suffix_size(self):
-        return self.args["suffix_size"]
-
-    def compute_feature(self, tokens, token_index):
-        return get_word_chunk(normalize_token(tokens[token_index]),
-                              self.suffix_size, len(tokens[token_index].value),
-                              reverse=True)
-
-
-@CRFFeatureFactory.register("length")
-class LengthFactory(SingleFeatureFactory):
-    """Feature: the length (characters) of the considered token"""
-
-    def compute_feature(self, tokens, token_index):
-        return str(len(tokens[token_index].value))
-
-
 @CRFFeatureFactory.register("ngram")
 class NgramFactory(SingleFeatureFactory):
     """Feature: the n-gram consisting of the considered token and potentially

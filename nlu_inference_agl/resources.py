@@ -104,17 +104,6 @@ def _update_metadata(metadata, required_resources):
     return metadata
 
 
-def print_compatibility_error(language):
-    from nlu_inference_agl.cli.utils import PrettyPrintLevel, pretty_print
-    pretty_print(
-        "Language resources for '{lang}' could not be loaded.\nYou may "
-        "have to download resources again using "
-        "'python -m snips_nlu download {lang}'".format(lang=language),
-        "This can happen when you update the snips-nlu library.",
-        title="Something went wrong while loading resources",
-        level=PrettyPrintLevel.ERROR)
-
-
 def get_resources_sub_directory(resources_dir):
     resources_dir = Path(resources_dir)
     with (resources_dir / "metadata.json").open(encoding="utf8") as f:

@@ -21,27 +21,6 @@ WORD_REGEX = re.compile(r"\w+(\s+\w+)*")
 UNKNOWNWORD_REGEX = re.compile(r"%s(\s+%s)*" % (UNKNOWNWORD, UNKNOWNWORD))
 
 
-def remove_builtin_slots(dataset):
-    filtered_dataset = deepcopy(dataset)
-    for intent_data in itervalues(filtered_dataset[INTENTS]):
-        for utterance in intent_data[UTTERANCES]:
-            utterance[DATA] = [
-                chunk for chunk in utterance[DATA]
-                if ENTITY not in chunk or not is_builtin_entity(chunk[ENTITY])]
-    return filtered_dataset
-
-
-def get_regularization_factor(dataset):
-    import numpy as np
-
-    intents = dataset[INTENTS]
-    nb_utterances = [len(intent[UTTERANCES]) for intent in itervalues(intents)]
-    avg_utterances = np.mean(nb_utterances)
-    total_utterances = sum(nb_utterances)
-    alpha = 1.0 / (4 * (total_utterances + 5 * avg_utterances))
-    return alpha
-
-
 def get_noise_it(noise, mean_length, std_length, random_state):
     it = itertools.cycle(noise)
     while True:
@@ -109,67 +88,6 @@ def add_unknown_word_to_utterances(utterances, replacement_string,
             }
             u[DATA].append(extra_chunk)
     return new_utterances
-
-
-def build_training_data(dataset, language, data_augmentation_config, resources,
-                        random_state):
-    import numpy as np
-
-    # Create class mapping
-    intents = dataset[INTENTS]
-    intent_index = 0
-    classes_mapping = dict()
-    for intent in sorted(intents):
-        classes_mapping[intent] = intent_index
-        intent_index += 1
-
-    noise_class = intent_index
-
-    augmented_utterances = []
-    utterance_classes = []
-    for intent_name, intent_data in sorted(iteritems(intents)):
-        nb_utterances = len(intent_data[UTTERANCES])
-        min_utterances_to_generate = max(
-            data_augmentation_config.min_utterances, nb_utterances)
-        utterances = augment_utterances(
-            dataset, intent_name, language=language,
-            min_utterances=min_utterances_to_generate,
-            capitalization_ratio=0.0,
-            add_builtin_entities_examples=
-            data_augmentation_config.add_builtin_entities_examples,
-            resources=resources, random_state=random_state)
-        augmented_utterances += utterances
-        utterance_classes += [classes_mapping[intent_name] for _ in
-                              range(len(utterances))]
-    if data_augmentation_config.unknown_words_replacement_string is not None:
-        augmented_utterances = add_unknown_word_to_utterances(
-            augmented_utterances,
-            data_augmentation_config.unknown_words_replacement_string,
-            data_augmentation_config.unknown_word_prob,
-            data_augmentation_config.max_unknown_words,
-            random_state
-        )
-
-    # Adding noise
-    noise = get_noise(resources)
-    noisy_utterances = generate_noise_utterances(
-        augmented_utterances, noise, len(intents), data_augmentation_config,
-        language, random_state)
-
-    augmented_utterances += noisy_utterances
-    utterance_classes += [noise_class for _ in noisy_utterances]
-    if noisy_utterances:
-        classes_mapping[NOISE_NAME] = noise_class
-
-    nb_classes = len(set(itervalues(classes_mapping)))
-    intent_mapping = [None for _ in range(nb_classes)]
-    for intent, intent_class in iteritems(classes_mapping):
-        if intent == NOISE_NAME:
-            intent_mapping[intent_class] = None
-        else:
-            intent_mapping[intent_class] = intent
-
-    return augmented_utterances, np.array(utterance_classes), intent_mapping
 
 
 def text_to_utterance(text):

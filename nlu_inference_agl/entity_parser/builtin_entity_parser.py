@@ -137,12 +137,6 @@ def is_gazetteer_entity(entity_label):
     return entity_label in get_all_gazetteer_entities()
 
 
-def is_grammar_entity(entity_label):
-    from snips_nlu_parsers import get_all_grammar_entities
-
-    return entity_label in get_all_grammar_entities()
-
-
 def find_gazetteer_entity_data_path(language, entity_name):
     for directory in DATA_PATH.iterdir():
         if not directory.is_dir():
@@ -160,14 +154,6 @@ def find_gazetteer_entity_data_path(language, entity_name):
         "You must download the corresponding resources by running "
         "'python -m snips_nlu download-entity {e} {lang}' before you can use "
         "this builtin entity.".format(e=entity_name, lang=language))
-
-
-def _get_gazetteer_entity_configurations(language, gazetteer_entity_scope):
-    return [{
-        "builtin_entity_name": entity_name,
-        "resource_path": str(find_gazetteer_entity_data_path(
-            language, entity_name))
-    } for entity_name in gazetteer_entity_scope]
 
 
 def _get_caching_key(language, entity_scope):

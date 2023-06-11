@@ -1,8 +1,6 @@
 from __future__ import print_function, unicode_literals
 
 import logging
-import os
-import subprocess
 import sys
 from enum import Enum, unique
 
@@ -10,14 +8,6 @@ import requests
 
 import nlu_inference_agl
 from nlu_inference_agl import __about__
-from nlu_inference_agl.common.utils import parse_version
-
-try:
-    from importlib import invalidate_caches
-except ImportError:
-    def invalidate_caches():
-        from time import sleep
-        sleep(1)
 
 
 @unique
@@ -74,52 +64,6 @@ def get_json(url, desc):
         raise OSError("%s: Received status code %s when fetching the resource"
                       % (desc, r.status_code))
     return r.json()
-
-
-def get_compatibility():
-    version = __about__.__version__
-    parsed_version = parse_version(version)
-    minor_version = "%s.%s" % (
-        parsed_version["major"], parsed_version["minor"])
-    table = get_json(__about__.__compatibility__, "Compatibility table")
-    nlu_table = table["snips-nlu"]
-    compatibility = nlu_table.get(version, nlu_table.get(minor_version))
-    if compatibility is None:
-        pretty_print("No compatible resources found for version %s" % version,
-                     title="Resources compatibility error", exits=1,
-                     level=PrettyPrintLevel.ERROR)
-    return compatibility
-
-
-def get_resources_version(resource_fullname, resource_alias, compatibility):
-    if resource_fullname not in compatibility:
-        pretty_print("No compatible resources found for '%s'" % resource_alias,
-                     title="Resources compatibility error", exits=1,
-                     level=PrettyPrintLevel.ERROR)
-    return compatibility[resource_fullname][0]
-
-
-def install_remote_package(download_url, user_pip_args=None):
-    pip_args = ['--no-cache-dir', '--no-deps']
-    if user_pip_args:
-        pip_args.extend(user_pip_args)
-    cmd = [sys.executable, '-m', 'pip', 'install'] + pip_args + [download_url]
-    exit_code = subprocess.call(cmd, env=os.environ.copy())
-    # Don't forget to invalidate caches after dynamically installing modules
-    # https://docs.python.org/3/library/importlib.html#importlib.import_module
-    invalidate_caches()
-    return exit_code
-
-
-def check_resources_alias(resource_name, shortcuts):
-    available_aliases = set(shortcuts)
-    if resource_name.lower() not in available_aliases:
-        aliases = ", ".join(sorted(available_aliases))
-        pretty_print(
-            "No resources found for {r}, available resource aliases are "
-            "(case insensitive):\n{a}".format(r=resource_name, a=aliases),
-            title="Unknown language resources", exits=1,
-            level=PrettyPrintLevel.ERROR)
 
 
 def set_nlu_logger(level=logging.INFO):
