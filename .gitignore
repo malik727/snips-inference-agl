@@ -25,3 +25,6 @@ env/
 # OS specific files
 .DS_Store
 Thumbs.db
+
+# Unnecessary scripts
+temp_*.sh

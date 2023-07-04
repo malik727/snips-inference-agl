@@ -28,13 +28,9 @@ required = [
     "scikit-learn>=0.20,<0.21; python_version<'3.6'",
     "scikit-learn==0.22.2.post1; python_version>='3.6'",
     "sklearn-crfsuite>=0.3.6,<0.4",
+    "snips-nlu-parsers>=0.4.3,<0.4.4",
+    "snips-nlu-utils>=0.9.1,<0.9.2",
 ]
-
-extras_require = {
-    "metrics": [
-        "snips-nlu-metrics>=0.14.1,<0.15",
-    ]
-}
 
 setup(name=about["__title__"],
       description=about["__summary__"],
@@ -50,7 +46,6 @@ setup(name=about["__title__"],
           "Tracker": about["__tracker_url__"],
       },
       install_requires=required,
-      extras_require=extras_require,
       classifiers=[
           "Programming Language :: Python :: 2",
           "Programming Language :: Python :: 2.7",
