@@ -1,1 +1,1 @@
-# NLU Inference AGL
+# Snips Inference AGL
